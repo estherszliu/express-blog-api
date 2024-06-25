@@ -26,10 +26,18 @@ async function seedUsers () {
 	console.log("Calling save on the created user:");
 	await callum.save();
 
-	console.log("Creating users from insertMany:");
-	let result = await UserModel.insertMany(userData)
-	console.log(result);
-	return result;
+	// console.log("Creating users from insertMany:");
+	// let result = await UserModel.insertMany(userData)
+
+	// If we wanted pre-save on the insertMany, this is the code to do it: 
+	console.log("Creating users in bulk by Promise.all over usermodel.create:");
+	let result = await Promise.all(userData.map(async (user) => {
+		let newUser = await UserModel.create(user);
+		return newUser;
+	}));
+
+	console.log([...result, callum]);
+	return [...result, callum];
 }
 
 
